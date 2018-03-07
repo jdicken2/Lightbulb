@@ -1,0 +1,60 @@
+# Inspired by Joseph Anderson's java Makefile structure
+
+# Program packages and files
+#   - The packages should be the path inside your src directory. eg: package1 package2/package3
+PACKAGES = edu/iit/bulbs edu/iit/buttons test
+
+# Java compiler
+JAVAC = javac
+JVM = 1.8
+
+# Java executer
+JE = java
+
+# Directory for compiled binaries
+BIN = ./bin/
+
+# Directory of source files
+SRC = ./src/
+
+# JUnit library
+LIB = ./src/lib/junit-4.12.jar
+
+# Java compiler flags
+JAVAFLAGS = -g -d $(BIN) -cp $(SRC):$(LIB) -target $(JVM)
+
+# Creating a .class file
+COMPILE = $(JAVAC) $(JAVAFLAGS)
+
+EMPTY = 
+
+JAVA_FILES = $(subst $(SRC), $(EMPTY), $(wildcard $(SRC)*.java))
+
+ifdef PACKAGES
+PACKAGEDIRS = $(addprefix $(SRC), $(PACKAGES))
+PACKAGEFILES = $(subst $(SRC), $(EMPTY), $(foreach DIR, $(PACKAGEDIRS), $(wildcard $(DIR)/*.java)))
+ALL_FILES = $(PACKAGEFILES) $(JAVA_FILES)
+else
+#ALL_FILES = $(wildcard $(SRC).java)
+ALL_FILES = $(JAVA_FILES)
+endif
+
+# One of these should be the "main" class listed in Runfile
+# CLASS_FILES = $(subst $(SRC), $(BIN), $(ALL_FILES:.java=.class))
+CLASS_FILES = $(ALL_FILES:.java=.class) 
+
+default : all run-test
+
+all : $(addprefix $(BIN), $(CLASS_FILES))
+
+run-test :
+	cd $(BIN); $(JE) org.junit.runner.JUnitCore JUnitTests; $(JE) TableLamp;
+
+#$(shell cd $(BIN); $(JE) TableLamp)
+
+# The line describing the action starts with <TAB>
+$(BIN)%.class : $(SRC)%.java
+	$(COMPILE) $<
+
+clean : 
+	rm -rf $(BIN)*

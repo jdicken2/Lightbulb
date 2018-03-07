@@ -1,0 +1,25 @@
+JFLAGS = -g 
+JC = javac 
+JE= java 
+.SUFFIXES: .java .class
+.java.class:
+		$(JC) $(JFLAGS) $*.java
+
+CLASSES = \
+		Lightbulb.java \
+		Button.java \
+		Lightbulb.java \
+		LampInterface.java \
+		TableLamp.java \
+		TableLampClient.java 
+
+default: classes run
+
+classes: $(CLASSES:.java=.class)
+
+run:
+		 $(JE) TableLampClient
+
+	
+clean:
+		$(RM) *.class
